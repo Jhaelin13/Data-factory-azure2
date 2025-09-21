@@ -1,0 +1,42 @@
+{
+	"name": "df_silver_orders",
+	"properties": {
+		"folder": {
+			"name": "Silver"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sql_bronze_orders",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as string,",
+				"          ProductID as string,",
+				"          CustomerID as string,",
+				"          SalesPersonID as string,",
+				"          OrderDate as string,",
+				"          ShipDate as string,",
+				"          OrderStatus as string,",
+				"          ShipAddress as string,",
+				"          BillAddress as string,",
+				"          Quantity as string,",
+				"          Sales as string,",
+				"          CreationTime as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1"
+			]
+		}
+	}
+}

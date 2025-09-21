@@ -106,12 +106,12 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze')]",
+			"name": "[concat(parameters('factoryName'), '/df')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"folder": {
-					"name": "Bronze"
+					"name": "Silver"
 				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
@@ -957,101 +957,177 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_bronze_customers')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/df_bronze_employees')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_bronze_costumers",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
 				"folder": {
 					"name": "Bronze"
 				},
-				"annotations": []
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Employees_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_bronze_employees",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          EmployeeID as string,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Department as string,",
+						"          BirthDate as string,",
+						"          Gender as string,",
+						"          Salary as string,",
+						"          ManagerID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EmployeeID as string,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Department as string,",
+						"          BirthDay as string,",
+						"          Gender as string,",
+						"          Salary as string,",
+						"          ManagerID as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EmployeeID,",
+						"          FirstName,",
+						"          LastName,",
+						"          Department,",
+						"          BirthDay = BirthDate,",
+						"          Gender,",
+						"          Salary,",
+						"          ManagerID",
+						"     )) ~> sink1"
+					]
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bronze_costumers')]"
+				"[concat(variables('factoryId'), '/datasets/Employees_csv')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_employees')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_bronze_products')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/df_bronze_orders')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_bronze_products",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
 				"folder": {
 					"name": "Bronze"
 				},
-				"annotations": []
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Orders_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_bronze_orders",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          OrderID as string,",
+						"          ProductID as string,",
+						"          CustomerID as string,",
+						"          SalesPersonID as string,",
+						"          OrderDate as string,",
+						"          ShipDate as string,",
+						"          OrderStatus as string,",
+						"          ShipAddress as string,",
+						"          BillAddress as string,",
+						"          Quantity as string,",
+						"          Sales as string,",
+						"          CreationTime as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          OrderID as string,",
+						"          ProductID as string,",
+						"          CustomerID as string,",
+						"          SalesPersonID as string,",
+						"          OrderDate as string,",
+						"          ShipDate as string,",
+						"          OrderStatus as string,",
+						"          ShipAddress as string,",
+						"          BillAddress as string,",
+						"          Quantity as string,",
+						"          Sales as string,",
+						"          CreationTime as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          OrderID,",
+						"          ProductID,",
+						"          CustomerID,",
+						"          SalesPersonID,",
+						"          OrderDate,",
+						"          ShipDate,",
+						"          OrderStatus,",
+						"          ShipAddress,",
+						"          BillAddress,",
+						"          Quantity,",
+						"          Sales,",
+						"          CreationTime",
+						"     )) ~> sink1"
+					]
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bronze_products')]"
+				"[concat(variables('factoryId'), '/datasets/Orders_csv')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sql_bronze_orders')]"
 			]
 		}
 	]

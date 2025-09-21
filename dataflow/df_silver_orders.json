@@ -19,6 +19,9 @@
 			"transformations": [
 				{
 					"name": "cast1"
+				},
+				{
+					"name": "cast2"
 				}
 			],
 			"scriptLines": [
@@ -50,7 +53,11 @@
 				"          Quantity as integer,",
 				"          Sales as integer",
 				"     ),",
-				"     errors: true) ~> cast1"
+				"     errors: true) ~> cast1",
+				"cast1 cast(output(",
+				"          CreationTime as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\''",
+				"     ),",
+				"     errors: true) ~> cast2"
 			]
 		}
 	}

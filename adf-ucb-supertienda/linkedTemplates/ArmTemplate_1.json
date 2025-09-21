@@ -93,6 +93,104 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_employees')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_bronze_employees",
+								"type": "DatasetReference"
+							},
+							"name": "source1",
+							"description": "]]"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_silver_employees",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "cast2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmployeeID as string,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Department as string,",
+						"          BirthDay as string,",
+						"          Gender as string,",
+						"          Salary as string,",
+						"          ManagerID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: ' select EmployeeID, FirstName,\\r\\n ISNULL (LastName, \\'n/a\\') as LastName,\\r\\n Department, BirthDay,\\r\\nGender, Salary,\\r\\nISNULL (ManagerID, 1) as ManagerID\\r\\n from [dbo].[Employees]',",
+						"     format: 'query') ~> source1",
+						"source1 cast(output(",
+						"          EmployeeID as integer,",
+						"          Salary as integer,",
+						"          ManagerID as integer",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 cast(output(",
+						"          BirthDay as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast2",
+						"cast2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EmployeeID as integer,",
+						"          FirstName as string,",
+						"          LastName as string,",
+						"          Department as string,",
+						"          BirthDay as date,",
+						"          Gender as string,",
+						"          Salary as integer,",
+						"          ManagerID as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EmployeeID,",
+						"          FirstName,",
+						"          LastName,",
+						"          Department,",
+						"          BirthDay,",
+						"          Gender,",
+						"          Salary,",
+						"          ManagerID",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pipeline_bronze_customers')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",

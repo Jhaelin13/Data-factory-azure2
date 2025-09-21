@@ -55,7 +55,7 @@
 				"     ),",
 				"     errors: true) ~> cast1",
 				"cast1 cast(output(",
-				"          CreationTime as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss\\'Z\\''",
+				"          CreationTime as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss.SSS\\'Z\\''",
 				"     ),",
 				"     errors: true) ~> cast2"
 			]

@@ -15,7 +15,11 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "cast1"
@@ -55,9 +59,30 @@
 				"     ),",
 				"     errors: true) ~> cast1",
 				"cast1 cast(output(",
-				"          CreationTime as timestamp 'yyyy-MM-dd\\'T\\'HH:mm:ss.SSS\\'Z\\''",
+				"          CreationTime as date 'yyyy.MM.dd'",
 				"     ),",
-				"     errors: true) ~> cast2"
+				"     errors: true) ~> cast2",
+				"cast2 sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          OrderID,",
+				"          ProductID,",
+				"          CustomerID,",
+				"          SalesPersonID,",
+				"          OrderDate,",
+				"          ShipDate,",
+				"          OrderStatus,",
+				"          ShipAddress,",
+				"          BillAddress,",
+				"          Quantity,",
+				"          Sales,",
+				"          CreationTime",
+				"     )) ~> sink1"
 			]
 		}
 	}

@@ -16,7 +16,11 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "cast1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          OrderID as string,",
@@ -35,7 +39,18 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1"
+				"     format: 'table') ~> source1",
+				"source1 cast(output(",
+				"          OrderID as integer,",
+				"          ProductID as integer,",
+				"          CustomerID as integer,",
+				"          SalesPersonID as integer,",
+				"          OrderDate as date,",
+				"          ShipDate as date,",
+				"          Quantity as integer,",
+				"          Sales as integer",
+				"     ),",
+				"     errors: true) ~> cast1"
 			]
 		}
 	}

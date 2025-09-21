@@ -1,0 +1,9 @@
+{
+	"name": "adf-ucb-supertienda",
+	"location": "westus3",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5cc32d40-3c08-4f4c-8da4-9291f2add250",
+		"tenantId": "cc28633f-12b8-46cb-bc15-951dae239b4d"
+	}
+}
